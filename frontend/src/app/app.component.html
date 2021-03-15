@@ -1,0 +1,43 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark" *ngIf="account">
+  <!-- Container wrapper -->
+  <div class="container-fluid">
+    <!-- Toggle button -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Collapsible wrapper -->
+    <div
+      class="collapse navbar-collapse justify-content-center"
+      id="navbarSupportedContent"
+    >
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item">
+          <h1 class="text-primary text-secondary">
+            <u><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OMNI STREET&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></u>
+          </h1>
+        </li>
+      </ul>
+    </div>
+    <div class="d-flex ms-auto">
+      <button mat-button mat-raised-button (click)="logout()">Logout</button>
+    </div>
+    <!-- Collapsible wrapper -->
+  </div>
+  <!-- Container wrapper -->
+</nav>
+<!-- Navbar -->
+
+<!-- global alert -->
+<app-alert></app-alert>
+
+<router-outlet></router-outlet>
