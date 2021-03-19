@@ -1,0 +1,68 @@
+version: "3.7"
+services:
+  client:
+    image: gcr.io/omni-demo-304013/omni-web
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    tty: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - frontend
+  mongodb:
+    image: mongo
+    container_name: mongo
+    restart: unless-stopped
+    command: mongod --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "admin"
+      MONGO_INITDB_ROOT_PASSWORD: "password"
+      MONGO_INITDB_DATABASE: omnidb
+      MONGODB_DATA_DIR: /data/db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodbdata:/data/db
+    networks:
+      - backend
+  api:
+    image: gcr.io/omni-demo-304013/omni-api
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: gunicorn --reload --workers 4 --timeout 300 --bind 0.0.0.0:5000 app:app
+    ports:
+      - "5000:5000"
+    environment:
+      MONGODB_HOSTNAME: mongodb
+      MONGODB_USERNAME: "apiuser"
+      MONGODB_PASSWORD: "apipassword"
+      MONGODB_DATABASE: omnidb
+      FLASK_ENV: development
+      JWT_SECRET_KEY: "omni-street-jwt-secret-key"
+      MODEL_PATH: "Models/"
+      API_KEY: "c0opefv48v6rduk5oegg"
+      FORGOT_API_KEY: "mB9dUbVRc7Qq7rvvGX5bbBsuTuq2f9Y6"
+      AI_API_KEY: "sM5JwyRk8bbm5U253CzXxWmH2DQjhbpQ"
+    volumes:
+      - ./backend:/app
+      - appdata:/var/www/
+    depends_on:
+      - mongodb
+    networks:
+      - frontend
+      - backend
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+volumes:
+  mongodbdata:
+    driver: local
+  appdata:
+    driver: local
