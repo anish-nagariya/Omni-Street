@@ -1,0 +1,14 @@
+<mat-card>
+  <mat-card-header>
+    <h2>Verify Email</h2>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="emailStatus == EmailStatus.Verifying" class=".spinner-wrapper">
+      <mat-spinner></mat-spinner>
+    </div>
+    <div *ngIf="emailStatus == EmailStatus.Failed">
+      Verification failed, you can also verify your account using the
+      <a routerLink="forgot">forgot password</a> page.
+    </div>
+  </mat-card-content></mat-card
+>

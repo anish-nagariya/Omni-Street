@@ -1,0 +1,25 @@
+@import "material-theme.scss";
+
+$theme-colors: (
+  "primary": #00ffff,
+  "secondary": #797979,
+);
+
+/* You can add global styles to this file, and also import other style files */
+@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "~@fortawesome/fontawesome-free/scss/solid.scss";
+@import "~@fortawesome/fontawesome-free/scss/regular.scss";
+@import "~@fortawesome/fontawesome-free/scss/brands.scss";
+
+@import "~mdb-angular-ui-kit/assets/scss/mdb.scss";
+
+html,
+body {
+  height: 100%;
+  background-color: black;
+}
+
+body {
+  margin: 0;
+  font-family: Briller, sans-serif;
+}

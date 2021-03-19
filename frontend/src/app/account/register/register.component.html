@@ -1,0 +1,69 @@
+<mat-card class="my-card">
+  <mat-card-content>
+    <form class="my-form" [formGroup]="form" (ngSubmit)="register()">
+      <h2>Registration</h2>
+      <mat-form-field class="full-width-input">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" required />
+        <mat-error> Username is required </mat-error>
+      </mat-form-field>
+      <mat-form-field class="full-width-input">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" required />
+        <mat-error *ngIf="f.password.errors?.required">
+          Password is required
+        </mat-error>
+        <mat-error *ngIf="f.password.errors?.minlength">
+          Password must be at least 6 characters
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="full-width-input">
+        <mat-label>Confirm Password</mat-label>
+        <input
+          matInput
+          type="password"
+          formControlName="confirmPassword"
+          required
+        />
+        <mat-error *ngIf="f.confirmPassword.errors?.required">
+          Confirm Password is required
+        </mat-error>
+        <mat-error *ngIf="f.confirmPassword.errors?.mustMatch">
+          Passwords must match
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="full-width-input">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" required />
+        <mat-error *ngIf="f.email.errors?.required">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="f.email.errors?.email">
+          Email must be a valid email address
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="full-width-input">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="firstName" />
+      </mat-form-field>
+      <mat-form-field class="full-width-input">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="lastName" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="loading">
+        <div class="spinner-wrapper">
+          <span>REGISTER</span>
+          <mat-spinner *ngIf="loading" [diameter]="30"></mat-spinner>
+        </div>
+      </button>
+      <button
+        mat-button
+        routerLink="'../login'"
+        color="primary"
+        [disabled]="loading"
+      >
+        Cancel
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>
