@@ -7,6 +7,7 @@ import nltk
 import os
 import math
 import time as t
+import requests
 from os import path
 from datetime import datetime, timezone
 from sklearn.preprocessing import MinMaxScaler
@@ -333,6 +334,10 @@ def get_prediction(model, scaler, last_data):
 
 
 def get_prediction_details(ticker, time_horizon, time_span, prediction, entry_price, prob, time):
+    response = requests.get('https://api.tdameritrade.com/v1/marketdata/' + ticker + '/quotes?apikey=GWNM8JLTS4S13H3TFPDVINLSKBMLKQJE').json()[ticker]
+    ask = response['askPrice']
+    bid = response['bidPrice']
+    volume = response['totalVolume']
     result = {
         'ticker': ticker,
         'enterPrice': str(entry_price),
@@ -341,9 +346,9 @@ def get_prediction_details(ticker, time_horizon, time_span, prediction, entry_pr
         'multiplier': str(time_horizon),
         'profitProbability': str(prob),
         'timeHorizon': str(time_horizon) + ' ' + time_span + 's',
-        'dayVolume': 100000000,
-        'bid': 10,
-        'ask': 11,
+        'dayVolume': float(volume),
+        'bid': float(bid),
+        'ask': float(ask),
         'float': 10,
         'Time': time
     }
