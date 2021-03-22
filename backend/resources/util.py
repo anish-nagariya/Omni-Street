@@ -338,6 +338,8 @@ def get_prediction_details(ticker, time_horizon, time_span, prediction, entry_pr
     ask = response['askPrice']
     bid = response['bidPrice']
     volume = response['totalVolume']
+    float_r = requests.get('https://api.tdameritrade.com/v1/instruments?apikey=GWNM8JLTS4S13H3TFPDVINLSKBMLKQJE&symbol=' + ticker + '&projection=fundamental').json()
+    float = float_r[ticker]['fundamental']['marketCapFloat']
     result = {
         'ticker': ticker,
         'enterPrice': str(entry_price),
@@ -349,7 +351,7 @@ def get_prediction_details(ticker, time_horizon, time_span, prediction, entry_pr
         'dayVolume': float(volume),
         'bid': float(bid),
         'ask': float(ask),
-        'float': 10,
+        'float': float(float),
         'Time': time
     }
     return result  # returns all prediction details
