@@ -15,7 +15,7 @@ from tensorflow.keras.layers import Dense, LSTM, Dropout, Activation
 from keras.callbacks import EarlyStopping
 
 
-API_KEY = os.environ['API_KEY']
+AI_API_KEY = os.environ['AI_API_KEY']
 models = {}
 
 def get_result(ticker, multiplier, horizon):
@@ -62,7 +62,7 @@ def get_result(ticker, multiplier, horizon):
 
 
 def get_historic_data(ticker, time_horizon, start, end):
-    client = finnhub.Client(API_KEY)
+    client = finnhub.Client(AI_API_KEY)
     resp = client.stock_candles(ticker, time_horizon, start, end)
     df0 = pd.DataFrame(resp)
     resp = client.stock_candles(ticker, time_horizon, 1609000000, 1612184400)
@@ -80,7 +80,7 @@ def get_historic_data(ticker, time_horizon, start, end):
 def get_recent_data(ticker, time_horizon, start, end):  # gets recent data for predictions
     if time_horizon == 'hour' or time_horizon == 1:
         time_horizon = 60
-    client = finnhub.Client(API_KEY)
+    client = finnhub.Client(AI_API_KEY)
     resp = client.stock_candles(ticker, time_horizon, start, end)
     df = pd.DataFrame(resp)
     df = df.drop(['s'], axis=1)
@@ -203,7 +203,7 @@ def process_news(df):
 
 def get_news(ticker):
     # gets historical news data from 2020-09-27 to 2021-02-19
-    client = finnhub.Client(API_KEY)
+    client = finnhub.Client(AI_API_KEY)
     resp = client.company_news(ticker, '2021-01-04', '2021-02-19')
     df = pd.DataFrame(resp)
     df = process_news(df)
@@ -211,7 +211,7 @@ def get_news(ticker):
 
 
 def get_recent_news(ticker, date):
-    client = finnhub.Client(API_KEY)
+    client = finnhub.Client(AI_API_KEY)
     # gets recent news for predictions
     resp = client.company_news(ticker, '2021-02-18', date)
     df = pd.DataFrame(resp)
@@ -397,30 +397,3 @@ def get_average(predictions, answers):
         difference += answers[i] - predictions[i]
     average = difference / tests
     return average
-
-
-def call_td_api(**kwargs):
-    key = 'GWNM8JLTS4S13H3TFPDVINLSKBMLKQJE'
-    symbol = kwargs.get('symbol')
-    url = 'https://api.tdameritrade.com/v1/marketdata/{}/pricehistory'.format(kwargs.get('symbol'))
-    params = {}
-    params.update({'apikey': key})
-
-    for arg in kwargs:
-        parameter = {arg: kwargs.get(arg)}
-        params.update(parameter)
-
-    result =  requests.get(url, params=params).json()
-
-    file = open(symbol + '.csv', 'w')
-    file.write('datetime,open,high,low,volume,close\n')
-    for resp in result['candles']:
-        file.write(str(resp['datetime']) + ',' + str(resp['open']) + "," + str(resp['low']) + ',' + str(resp['high']) + ',' + str(resp['volume'])
-        + ',' + str(resp['close']) + '\n')
-    file.close()
-
-    file = open(symbol + '.csv', 'r')
-    df = pd.read_csv(file)
-    df['datetime'] = df['datetime'].apply(lambda x: datetime.fromtimestamp(x/1000))
-    return df
-    

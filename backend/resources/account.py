@@ -1,15 +1,15 @@
-import datetime
 import random
 import os
+import pprint
 from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt, create_refresh_token
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist
 from database.models.account import Account
 from database.models.token import TokenBlockList
-from .errors import SchemaValidationError, UserNotExistsError, UsernameAlreadyExistsError, UnauthorizedError, InternalServerError
+from .errors import InvalidApiKeyError, SchemaValidationError, UserNotExistsError, UsernameAlreadyExistsError, UnauthorizedError, InternalServerError
 
-ForgotApiKey = os.environ['FORGOT_API_KEY']
+ApiKey = os.environ['API_KEY']
 
 
 class RegisterApi(Resource):
@@ -24,6 +24,7 @@ class RegisterApi(Resource):
         except NotUniqueError:
             raise UsernameAlreadyExistsError
         except Exception as e:
+            pprint.pprint(e)
             raise InternalServerError
 
 
@@ -45,6 +46,7 @@ class LoginApi(Resource):
         except (UnauthorizedError, DoesNotExist):
             raise UnauthorizedError
         except Exception as e:
+            pprint.pprint(e)
             raise InternalServerError
 
 
@@ -64,6 +66,7 @@ class RefreshTokenApi(Resource):
         except (UnauthorizedError, DoesNotExist):
             raise UnauthorizedError
         except Exception as e:
+            pprint.pprint(e)
             raise InternalServerError
 
 
@@ -77,6 +80,7 @@ class RevokeTokenApi(Resource):
         except (UnauthorizedError, DoesNotExist):
             raise UnauthorizedError
         except Exception as e:
+            pprint.pprint(e)
             raise InternalServerError
 
 
@@ -84,8 +88,8 @@ class ForgotApi(Resource):
     def post(self):
         try:
             body = request.get_json()
-            if ForgotApiKey != body['key']:
-                raise UnauthorizedError
+            if ApiKey != body['key']:
+                raise InvalidApiKeyError
             Account.objects().get(username=body['username'])
 
             while True:
@@ -96,11 +100,12 @@ class ForgotApi(Resource):
             Account.objects(username=body['username']).update(
                 set__resetToken=resetToken)
             return {'resetToken': resetToken}, 200
-        except UnauthorizedError:
-            raise UnauthorizedError
+        except InvalidApiKeyError:
+            raise InvalidApiKeyError
         except DoesNotExist:
             raise UserNotExistsError
         except Exception as e:
+            pprint.pprint(e)
             raise InternalServerError
 
 
@@ -114,6 +119,7 @@ class ResetPasswordApi(Resource):
         except DoesNotExist:
             raise UserNotExistsError
         except Exception as e:
+            pprint.pprint(e)
             raise InternalServerError
 
     @jwt_required()
@@ -127,6 +133,7 @@ class ResetPasswordApi(Resource):
         except (UnauthorizedError, DoesNotExist):
             raise UnauthorizedError
         except Exception as e:
+            pprint.pprint(e)
             raise InternalServerError
 
 
@@ -139,4 +146,5 @@ class ValidateResetTokenApi(Resource):
 
             return 'Valid reset token', 200
         except Exception as e:
+            pprint.pprint(e)
             raise InternalServerError

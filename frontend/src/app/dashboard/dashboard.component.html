@@ -1,18 +1,11 @@
-<div class="d-flex flex-row" *ngIf="loadCount != loadMax">
-  <div class="progress flex-fill" style="height: 20px">
-    <div
-      class="progress-bar bg-primary progress-bar-striped progress-bar-animated text-dark"
-      role="progressbar"
-      [style.width]="(loadCount / loadMax) * 100 + '%'"
-      [aria-valuenow]="loadCount"
-      aria-valuemin="0"
-      [aria-valuemax]="loadMax"
-    >
-      {{ (loadCount / loadMax) * 100 | number: "1.0-2" }}%
-    </div>
-  </div>
-</div>
 <div class="d-flex flex-row-reverse">
+  <countdown
+    class="addTicker text-primary align-self-center"
+    style="width: 60px"
+    #cd
+    [config]="countdownConfig"
+    (event)="countdownComplete($event)"
+  ></countdown>
   <div
     class="spinner-border text-primary addTicker"
     role="status"
@@ -23,7 +16,7 @@
   <button
     class="btn btn-primary btn-floating addTicker text-dark"
     (click)="addTicker()"
-    [disabled]="isAdding"
+    [disabled]="isAdding || maxTickerCount != tickers.length"
   >
     <i class="fas fa-plus"></i>
   </button>
@@ -56,7 +49,7 @@
         <div
           class="card tickerBox"
           [ngClass]="
-            ticker.profitTarget >= 4
+            ticker.profitTarget >= 10
               ? 'bg-success'
               : ticker.profitProbability >= 70
               ? 'bg-warning'

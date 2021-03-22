@@ -64,3 +64,6 @@ websockets
 Werkzeug
 wrapt
 zipp
+celery==4.4.7
+redis
+flower

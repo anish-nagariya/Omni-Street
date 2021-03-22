@@ -70,6 +70,9 @@ Markdown = "*"
 Pillow = "*"
 PyYAML = "*"
 Werkzeug = "*"
+celery = "==4.4.7"
+redis = "*"
+flower = "*"
 
 [dev-packages]
 autopep8 = "*"

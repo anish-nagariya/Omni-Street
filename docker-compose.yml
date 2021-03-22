@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   client:
-    image: gcr.io/omni-demo-304013/omni-web
+    image: omni-web
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -13,6 +13,7 @@ services:
       - /app/node_modules
     networks:
       - frontend
+
   mongodb:
     image: mongo
     container_name: mongo
@@ -29,8 +30,9 @@ services:
       - mongodbdata:/data/db
     networks:
       - backend
+
   api:
-    image: gcr.io/omni-demo-304013/omni-api
+    image: omni-api
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -45,17 +47,76 @@ services:
       FLASK_ENV: development
       JWT_SECRET_KEY: "omni-street-jwt-secret-key"
       MODEL_PATH: "Models/"
-      API_KEY: "c0opefv48v6rduk5oegg"
-      FORGOT_API_KEY: "mB9dUbVRc7Qq7rvvGX5bbBsuTuq2f9Y6"
-      AI_API_KEY: "sM5JwyRk8bbm5U253CzXxWmH2DQjhbpQ"
+      AI_API_KEY: "c0opefv48v6rduk5oegg"
+      API_KEY: "mB9dUbVRc7Qq7rvvGX5bbBsuTuq2f9Y6"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     volumes:
       - ./backend:/app
       - appdata:/var/www/
     depends_on:
       - mongodb
+      - redis
     networks:
       - frontend
       - backend
+  
+  worker:
+    image: omni-worker
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery --app=tasks.celery worker -E --loglevel=debug
+    user: nobody
+    environment: 
+      FLASK_ENV: development
+      FLASK_DEBUG: 1
+      MODEL_PATH: "Models/"
+      AI_API_KEY: "c0opefv48v6rduk5oegg"
+      API_KEY: "mB9dUbVRc7Qq7rvvGX5bbBsuTuq2f9Y6"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    volumes:
+      - ./backend:/app
+      - appdata:/var/www/
+    depends_on:
+      - api
+      - redis
+    networks: 
+      - backend
+  
+  redis:
+    image: redis
+    container_name: redis
+    ports: 
+      - "6379:6379"
+    hostname: redis
+    networks: 
+      - backend
+
+  dashboard:
+    image: omni-flower
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command:  flower --app=tasks.celery --port=5555 --broker=redis://redis:6379/0
+    ports: 
+      - "5555:5555"
+    environment: 
+      FLASK_ENV: development
+      FLASK_DEBUG: 1
+      MODEL_PATH: "Models/"
+      AI_API_KEY: "c0opefv48v6rduk5oegg"
+      API_KEY: "mB9dUbVRc7Qq7rvvGX5bbBsuTuq2f9Y6"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      - api
+      - redis
+      - worker
+    networks: 
+      - backend
+
 networks:
   frontend:
     driver: bridge

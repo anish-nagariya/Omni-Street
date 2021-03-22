@@ -10,13 +10,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MdbModule } from 'mdb-angular-ui-kit';
+import { CountdownModule } from 'ngx-countdown';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AccountModule } from './account/account.module';
 import {
   appInitializer,
   ErrorInterceptor,
-  fakeBackendProvider,
+  // fakeBackendProvider,
   JwtInterceptor,
 } from './_helpers';
 import { AccountService } from './_services';
@@ -44,6 +45,7 @@ import { ConfirmDialogComponent } from './_components/confirm-dialog/confirm-dia
     DragDropModule,
     AngularMaterialModule,
     AccountModule,
+    CountdownModule,
   ],
   providers: [
     {
@@ -56,7 +58,7 @@ import { ConfirmDialogComponent } from './_components/confirm-dialog/confirm-dia
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
 
     // provider used to create fake backend
-    //fakeBackendProvider,
+    // fakeBackendProvider,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

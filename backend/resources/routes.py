@@ -1,5 +1,5 @@
 from .account import ForgotApi, LoginApi, RefreshTokenApi, RegisterApi, ResetPasswordApi, RevokeTokenApi, ValidateResetTokenApi
-from .ticker import TickerAiApi, TickersApi
+from .ticker import StartTickerAiAsyncApi, TickerAiApi, TickerAiAsyncResultApi, TickersApi
 
 
 def initialize_routes(api):
@@ -12,3 +12,5 @@ def initialize_routes(api):
     api.add_resource(ResetPasswordApi, '/accounts/reset-password')
     api.add_resource(ValidateResetTokenApi, '/accounts/validate-reset-token')
     api.add_resource(TickerAiApi, '/tickers/<ticker>/<multiplier>/<horizon>')
+    api.add_resource(StartTickerAiAsyncApi, '/tickers/task')
+    api.add_resource(TickerAiAsyncResultApi, '/tickers/task/<taskId>')

@@ -1,5 +1,6 @@
 from flask_restful import HTTPException
 
+
 class InternalServerError(HTTPException):
     pass
 
@@ -21,6 +22,10 @@ class UserNotExistsError(HTTPException):
 
 
 class TickerNotFoundError(HTTPException):
+    pass
+
+
+class InvalidApiKeyError(HTTPException):
     pass
 
 
@@ -52,6 +57,10 @@ errors = {
     "TickerNotFoundError": {
         "message": "Invalid ticker provided",
         "status": 404
+    },
+    "InvalidApiKeyError": {
+        "message": "Invalid Api Key provided",
+        "status": 401
     }
 
 }

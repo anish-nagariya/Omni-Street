@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   client:
-    image: gcr.io/omni-demo-304013/omni-web
+    image: omni-web
     build:
       context: ./frontend
       dockerfile: Prod.Dockerfile
@@ -12,6 +12,7 @@ services:
       - /app/node_modules
     networks:
       - frontend
+
   mongodb:
     image: mongo
     container_name: mongo
@@ -26,8 +27,9 @@ services:
       - mongodbdata:/data/db
     networks:
       - backend
+
   api:
-    image: gcr.io/omni-demo-304013/omni-api
+    image: omni-api
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -40,16 +42,51 @@ services:
       FLASK_ENV: production
       JWT_SECRET_KEY: "omni-street-jwt-secret-key"
       MODEL_PATH: "Models/"
-      API_KEY: "c0opefv48v6rduk5oegg"
-      FORGOT_API_KEY: "EE4DxQm6DjgeSuK2c6qsBzvmhhz66vyh"
-      AI_API_KEY: "y4umsVpFUcVZsGkpSqntqPet7PQp5HZE"
+      AI_API_KEY: "c0opefv48v6rduk5oegg"
+      API_KEY: "EE4DxQm6DjgeSuK2c6qsBzvmhhz66vyh"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     volumes:
       - appdata:/var/www/
     depends_on:
       - mongodb
+      - redis
     networks:
       - frontend
       - backend
+
+  worker:
+    image: omni-worker
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery --app=tasks.celery worker --loglevel=info
+    user: nobody
+    environment: 
+      FLASK_ENV: production
+      MODEL_PATH: "Models/"
+      AI_API_KEY: "c0opefv48v6rduk5oegg"
+      API_KEY: "EE4DxQm6DjgeSuK2c6qsBzvmhhz66vyh"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    volumes:
+      - ./backend:/app
+      - appdata:/var/www/
+    depends_on:
+      - api
+      - redis
+    networks: 
+      - backend
+  
+  redis:
+    image: redis
+    container_name: redis
+    ports: 
+      - "6379:6379"
+    hostname: redis
+    networks: 
+      - backend
+  
 networks:
   frontend:
     driver: bridge
