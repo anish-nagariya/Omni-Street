@@ -49,7 +49,7 @@
         <div
           class="card tickerBox"
           [ngClass]="
-            ticker.profitTarget >= 10
+            ticker.profitTarget >= 10 && ticker.profitProbability >= 70
               ? 'bg-success'
               : ticker.profitProbability >= 70 && ticker.profitTarget >= 5
               ? 'bg-warning'
