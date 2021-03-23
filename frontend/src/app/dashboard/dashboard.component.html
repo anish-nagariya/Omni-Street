@@ -51,7 +51,7 @@
           [ngClass]="
             ticker.profitTarget >= 10
               ? 'bg-success'
-              : ticker.profitProbability >= 70
+              : ticker.profitProbability >= 70 && ticker.profitTarget >= 5
               ? 'bg-warning'
               : ''
           "
