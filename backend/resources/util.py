@@ -52,6 +52,7 @@ def get_result(ticker, multiplier, horizon):
     recent_df = call_recent_td_data(ticker)
 
     time = recent_df['timestamp'].iloc[-1]
+    time = time.strftime("%H:%M:%S")
     entry_price = recent_df['open'].iloc[-1]
 
     training_df = normalize_recent_data(recent_df, scaler)
@@ -358,7 +359,8 @@ def get_prediction_details(ticker, time_horizon, time_span, prediction, entry_pr
         'bid': float(bid),
         'ask': float(ask),
         'float': float(float_val),
-        'Time': time
+        'Time': str(time),
+        'entryTime': str(time)
     }
     return result  # returns all prediction details
 
