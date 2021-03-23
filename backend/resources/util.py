@@ -42,14 +42,14 @@ def get_result(ticker, multiplier, horizon):
         models[ticker] = model
         print("LOADING MODEL...")
 
-    recent_df = call_recent_data(ticker, multiplier)
+    recent_df = call_recent_td_data(ticker)
     x_train, y_train, xv, yv, x_test, y_test, scaler = preprocess_training_data(recent_df)
 
     predictions = model.predict(x_test) * 1 / scaler[0]
     answers = y_test * 1 / scaler[0]
     average = get_average(predictions[-10:], answers[-10:])
 
-    recent_df = call_recent_data(ticker, multiplier)
+    recent_df = call_recent_td_data(ticker)
 
     time = recent_df['timestamp'].iloc[-1]
     entry_price = recent_df['open'].iloc[-1]
@@ -92,7 +92,10 @@ def get_recent_data(ticker, time_horizon, start, end):  # gets recent data for p
 
 
 def preprocess_training_data(training_df):
-    training_df = training_df.drop(['timestamp'], axis=1)
+    try:
+        training_df = training_df.drop(['timestamp'], axis=1)
+    except KeyError:
+        training_df = training_df.drop(['datetime'], axis=1)
     scaler = MinMaxScaler()
     scaler_df = training_df.copy()
     scaler.fit_transform(scaler_df)
@@ -115,7 +118,10 @@ def preprocess_training_data(training_df):
 
 def normalize_recent_data(recent_df, scaler):
     training_df = recent_df[-12:]
-    training_df = training_df.drop(['timestamp'], axis=1)
+    try:
+        training_df = training_df.drop(['timestamp'], axis=1)
+    except KeyError:
+        training_df = training_df.drop(['datetime'], axis=1)
     training_df['open'] *= scaler[0]
     training_df['low'] *= scaler[1]
     training_df['high'] *= scaler[2]
@@ -404,3 +410,32 @@ def get_average(predictions, answers):
         difference += answers[i] - predictions[i]
     average = difference / tests
     return average
+
+def call_td_api(**kwargs):
+    key = 'GWNM8JLTS4S13H3TFPDVINLSKBMLKQJE'
+    symbol = kwargs.get('symbol')
+    url = 'https://api.tdameritrade.com/v1/marketdata/{}/pricehistory'.format(kwargs.get('symbol'))
+    params = {}
+    params.update({'apikey': key})
+
+    for arg in kwargs:
+        parameter = {arg: kwargs.get(arg)}
+        params.update(parameter)
+
+    result =  requests.get(url, params=params).json()
+
+    file = open('Data/Recent/' + symbol + '.csv', 'w')
+    file.write('timestamp,open,high,low,volume,close\n')
+    for resp in result['candles']:
+        file.write(str(resp['datetime']) + ',' + str(resp['open']) + "," + str(resp['low']) + ',' + str(resp['high']) + ',' + str(resp['volume'])
+        + ',' + str(resp['close']) + '\n')
+    file.close()
+
+    file = open('Data/Recent/' + symbol + '.csv', 'r')
+    df = pd.read_csv(file)
+    df['timestamp'] = df['timestamp'].apply(lambda x: datetime.fromtimestamp(x/1000))
+    return df
+
+
+def call_recent_td_data(ticker):
+    return call_td_api(symbol=ticker, period=10, periodType='day', frequencyType='minute', frequency=5, startDate=(math.floor(t.time()) - 864000) * 1000, endDate=math.floor(t.time()) * 1000)
