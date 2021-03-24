@@ -175,7 +175,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   startCountdown() {
     let coeff = 1000 * 60 * 5;
     let nextDateTime: Date = new Date(
-      Math.ceil(new Date().getTime() / coeff) * coeff + 60 * 1000
+      Math.ceil(new Date().getTime() / coeff) * coeff
     );
     this.countdownConfig = {
       format: 'm:ss',
