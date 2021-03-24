@@ -113,8 +113,12 @@ class ResetPasswordApi(Resource):
     def post(self):
         try:
             body = request.get_json()
-            Account.objects(resetToken=body['resetToken']).update(
-                password=body['password'], unset__resetToken='')
+            if Account.objects(username=body['username']).count() != 1:
+                raise DoesNotExist
+
+            Account.objects(username=body['username']).update(
+                password=body['password'])
+
             return 'Password reset', 200
         except DoesNotExist:
             raise UserNotExistsError
@@ -141,7 +145,8 @@ class ValidateResetTokenApi(Resource):
     def post(self):
         try:
             body = request.get_json()
-            if(Account.objects(resetToken=str(body['resetToken'])).count() != 1):
+            # if Account.objects(resetToken=str(body['resetToken'])).count() != 1:
+            if body['resetToken'] != os.environ['RESET_TOKEN']:
                 return {'message': 'Invalid reset token provided'}, 401
 
             return 'Valid reset token', 200

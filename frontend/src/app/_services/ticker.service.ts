@@ -20,17 +20,21 @@ export class TickerService {
     return this.http.get<string[]>(baseUrl, { withCredentials: true });
   }
 
+  saveAllTickers(tickers: string[]) {
+    return this.http.post<any>(baseUrl, { tickers }, { withCredentials: true });
+  }
+
   addTicker(symbol: string): Observable<Ticker> {
     return this.http.put<Ticker>(
       baseUrl,
-      { symbol: symbol },
+      { symbol },
       { withCredentials: true }
     );
   }
 
   deleteTicker(symbol: string) {
     return this.http.request('delete', baseUrl, {
-      body: { symbol: symbol },
+      body: { symbol },
       withCredentials: true,
     });
   }
@@ -57,7 +61,7 @@ export class TickerService {
   ): Observable<any> {
     return this.http.post<any>(
       baseUrl + '/task',
-      { ticker: symbol, multiplier: multiplier, horizon: horizon },
+      { ticker: symbol, multiplier, horizon },
       { withCredentials: true }
     );
   }

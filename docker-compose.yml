@@ -36,7 +36,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: gunicorn --reload --workers 4 --timeout 300 --bind 0.0.0.0:5000 app:app
+    command: gunicorn --reload --workers 10 --timeout 300 --bind 0.0.0.0:5000 app:app
     ports:
       - "5000:5000"
     environment:
@@ -51,6 +51,7 @@ services:
       API_KEY: "mB9dUbVRc7Qq7rvvGX5bbBsuTuq2f9Y6"
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+      RESET_TOKEN: "3030207007026787"
     volumes:
       - ./backend:/app
       - appdata:/var/www/

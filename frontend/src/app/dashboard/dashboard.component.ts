@@ -14,6 +14,7 @@ import { AccountService, AlertService, TickerService } from '../_services';
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   tickers: Ticker[] = [];
+  sortedTicker: string[];
   newTicker: string;
   index = 0;
   isAdding = false;
@@ -31,9 +32,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public dialog: MatDialog
   ) {
     this.startCountdown();
-    this.subscription = this.accountService.logoutAnnounced$.subscribe(() =>
-      this.clearInterval()
-    );
+    this.subscription = this.accountService.logoutAnnounced$.subscribe(() => {
+      this.clearInterval();
+      this.tickerService
+        .saveAllTickers(this.sortedTicker)
+        .toPromise()
+        .catch((err) => this.alertService.error(err));
+    });
   }
 
   ngAfterViewInit(): void {
@@ -42,6 +47,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       .toPromise()
       .then(
         (tickers) => {
+          this.sortedTicker = tickers;
           this.maxTickerCount = tickers.length;
           tickers.forEach((symbol) => this.startTickerPrediction(symbol));
         },
@@ -82,6 +88,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             if (index >= 0) this.deletedTicker.splice(index, 1);
 
             this.tickers.push(result);
+            this.sortedTicker.push(result.ticker);
             this.maxTickerCount = this.tickers.length;
             this.isAdding = false;
           },
@@ -116,6 +123,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
               () => {
                 this.deletedTicker.push(ticker.ticker);
                 this.tickers.splice(index, 1);
+                this.sortedTicker.splice(index, 1);
                 this.maxTickerCount = this.tickers.length;
               },
               (err) => this.alertService.error(err)
@@ -131,6 +139,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       event.previousContainer.data.index,
       event.container.data.index
     );
+    this.sortedTicker = this.tickers.map((ticker) => ticker.ticker);
   }
 
   convertToString(num: number) {
@@ -143,6 +152,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   countdownComplete(event: CountdownEvent) {
     if (event.action !== 'done') return;
     this.startCountdown();
+
+    if (this.tickers.length) {
+      this.tickerService
+        .saveAllTickers(this.sortedTicker)
+        .toPromise()
+        .catch((err) => this.alertService.error(err));
+    }
 
     if (this.tickers.length == 0) return;
     this.tickers.forEach((ticker) => this.startTickerPrediction(ticker.ticker));
@@ -169,34 +185,52 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   startInterval() {
     this.interval = setInterval(() => {
-      if (!this.tickerTaskMap.size) return;
-      this.tickerTaskMap.forEach((taskId, ticker) => {
-        if (this.deletedTicker.includes(ticker)) {
-          this.tickerTaskMap.delete(ticker);
-          return;
-        }
-        this.tickerService
-          .checkTickerPredictionStatus(taskId)
-          .subscribe((result) => {
-            if (typeof result !== 'string') {
-              const index = this.tickers
-                .map((item) => item.ticker)
-                .indexOf(result.ticker);
-              if (index >= 0) this.tickers[index] = result;
-              else if (!this.deletedTicker.includes(result.ticker))
-                this.tickers.push(result);
-              this.tickerTaskMap.delete(result.ticker);
-            } else {
-              console.log(result);
-              if (this.tickerTaskMap.has(result)) {
-                this.tickerTaskMap.delete(result);
-                this.maxTickerCount--;
-                this.tickerService.deleteTicker(result).subscribe();
+      if (this.tickerTaskMap.size) {
+        this.tickerTaskMap.forEach((taskId, ticker) => {
+          if (this.deletedTicker.includes(ticker)) {
+            this.tickerTaskMap.delete(ticker);
+            return;
+          }
+          this.tickerService
+            .checkTickerPredictionStatus(taskId)
+            .subscribe((result) => {
+              if (typeof result !== 'string') {
+                const index = this.tickers
+                  .map((item) => item.ticker)
+                  .indexOf(result.ticker);
+                if (index >= 0) this.tickers[index] = result;
+                else if (!this.deletedTicker.includes(result.ticker)) {
+                  this.tickers.splice(this.getDestIndex(result), 0, result);
+                }
+                this.tickerTaskMap.delete(result.ticker);
+              } else {
+                console.log(result);
+                if (
+                  this.tickerTaskMap.has(result) &&
+                  !this.tickers.map((t) => t.ticker).includes(result)
+                ) {
+                  this.tickerTaskMap.delete(result);
+                  this.maxTickerCount--;
+                  this.tickerService.deleteTicker(result).subscribe();
+                }
               }
-            }
-          });
-      });
+            });
+        });
+      }
     }, 5000);
+  }
+
+  private getDestIndex(ticker: Ticker): number {
+    if (!this.tickers.length) return 0;
+    let sortedIndex = this.sortedTicker.indexOf(ticker.ticker);
+    while (sortedIndex < this.sortedTicker.length - 1) {
+      sortedIndex++;
+      let nextTicker = this.sortedTicker[sortedIndex];
+      let index = this.tickers.map((t) => t.ticker).indexOf(nextTicker);
+      if (index == -1) continue;
+      return index;
+    }
+    return this.tickers.length;
   }
 
   clearInterval() {

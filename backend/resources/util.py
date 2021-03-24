@@ -65,11 +65,14 @@ def get_result(ticker, multiplier, horizon):
 
 def get_historic_data(ticker, time_horizon, start, end):
     client = finnhub.Client(AI_API_KEY)
-    resp = client.stock_candles(ticker, time_horizon, start, end)
+    resp = client.stock_candles(ticker, time_horizon, end, end + 3184400)
     df0 = pd.DataFrame(resp)
-    resp = client.stock_candles(ticker, time_horizon, 1609000000, 1612184400)
+    resp = client.stock_candles(ticker, time_horizon, start, end)
     df1 = pd.DataFrame(resp)
+    resp = client.stock_candles(ticker, time_horizon, 1609000000, 1612184400)
+    df2 = pd.DataFrame(resp)
     df = pd.concat([df1, df0])
+    df = pd.concat([df2, df])
     df = df.drop(['s'], axis=1)
     df = df.rename(columns={'c': 'close', 'h': 'high', 'l': 'low',
                             'o': 'open', 't': 'timestamp', 'v': 'volume'})
@@ -317,7 +320,7 @@ def compile_model(model, training_input, training_output, xv, yv):
 
     model.fit(  # trains model for a maximum of 100 epochs
         training_input, training_output, validation_data=(xv, yv),
-        epochs=20, batch_size=24, verbose=1, callbacks=[es]
+        epochs=15, batch_size=24, verbose=1, callbacks=[es]
     )
 
 

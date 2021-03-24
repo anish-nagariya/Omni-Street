@@ -27,6 +27,7 @@
       id="newTicker"
       class="form-control"
       [(ngModel)]="newTicker"
+      oninput="this.value = this.value.toUpperCase()"
     />
     <label mdbLabel color="blue" class="form-label" for="newTicker"
       >Enter Ticker</label

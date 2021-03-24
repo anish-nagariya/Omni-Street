@@ -28,6 +28,17 @@ class TickersApi(Resource):
             raise InternalServerError
 
     @jwt_required()
+    def post(self):
+        try:
+            body = request.get_json()
+            pprint.pprint(body)
+        except DoesNotExist:
+            raise UserNotExistsError
+        except Exception as e:
+            pprint.pprint(e)
+            raise InternalServerError
+
+    @jwt_required()
     def put(self):
         try:
             username = get_jwt_identity()

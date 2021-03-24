@@ -33,6 +33,7 @@ export class ResetPasswordComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.formBuilder.group(
       {
+        username: ['', Validators.required],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', Validators.required],
       },
@@ -61,7 +62,7 @@ export class ResetPasswordComponent implements OnInit {
     this.loading = true;
     this.accountService
       .resetPassword(
-        this.token,
+        this.f.username.value,
         this.f.password.value,
         this.f.confirmPassword.value
       )
