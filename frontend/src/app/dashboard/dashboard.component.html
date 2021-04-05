@@ -16,7 +16,7 @@
   <button
     class="btn btn-primary btn-floating addTicker text-dark"
     (click)="addTicker()"
-    [disabled]="isAdding || maxTickerCount != tickers.length"
+    [disabled]="isAdding || (tickerTaskMap.size && !isLoaded)"
   >
     <i class="fas fa-plus"></i>
   </button>

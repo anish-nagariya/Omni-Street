@@ -31,7 +31,11 @@ class TickersApi(Resource):
     def post(self):
         try:
             body = request.get_json()
-            pprint.pprint(body)
+            username = get_jwt_identity()
+            account = Account.objects.get(username=username)
+            account.symbols = body['tickers']
+            account.save()
+            return 'None', 200
         except DoesNotExist:
             raise UserNotExistsError
         except Exception as e:

@@ -18,12 +18,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   newTicker: string;
   index = 0;
   isAdding = false;
+  isLoaded = false;
   subscription: Subscription;
   countdownConfig: CountdownConfig;
   tickerTaskMap = new Map<string, string>();
   interval;
   deletedTicker: string[] = [];
-  maxTickerCount: number;
 
   constructor(
     private accountService: AccountService,
@@ -48,7 +48,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       .then(
         (tickers) => {
           this.sortedTicker = tickers;
-          this.maxTickerCount = tickers.length;
           tickers.forEach((symbol) => this.startTickerPrediction(symbol));
         },
         (err) => {
@@ -66,6 +65,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscription.unsubscribe();
     this.clearInterval();
   }
+
   addTicker() {
     if (
       this.newTicker &&
@@ -89,7 +89,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
             this.tickers.push(result);
             this.sortedTicker.push(result.ticker);
-            this.maxTickerCount = this.tickers.length;
             this.isAdding = false;
           },
           (err) => {
@@ -124,7 +123,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.deletedTicker.push(ticker.ticker);
                 this.tickers.splice(index, 1);
                 this.sortedTicker.splice(index, 1);
-                this.maxTickerCount = this.tickers.length;
               },
               (err) => this.alertService.error(err)
             );
@@ -150,6 +148,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   countdownComplete(event: CountdownEvent) {
+    console.log(event);
     if (event.action !== 'done') return;
     this.startCountdown();
 
@@ -177,6 +176,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     let nextDateTime: Date = new Date(
       Math.ceil(new Date().getTime() / coeff) * coeff
     );
+
+    if (nextDateTime.getTime() === this.countdownConfig?.stopTime) {
+      nextDateTime = new Date(
+        Math.ceil(new Date().getTime() / coeff) * coeff + coeff
+      );
+    }
+
     this.countdownConfig = {
       format: 'm:ss',
       stopTime: nextDateTime.getTime(),
@@ -191,9 +197,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.tickerTaskMap.delete(ticker);
             return;
           }
+          let counter = 0,
+            maxCount = this.tickerTaskMap.size;
           this.tickerService
             .checkTickerPredictionStatus(taskId)
             .subscribe((result) => {
+              if (!this.isLoaded) {
+                counter++;
+                this.isLoaded = counter === maxCount;
+              }
+
               if (typeof result !== 'string') {
                 const index = this.tickers
                   .map((item) => item.ticker)
@@ -210,8 +223,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                   !this.tickers.map((t) => t.ticker).includes(result)
                 ) {
                   this.tickerTaskMap.delete(result);
-                  this.maxTickerCount--;
-                  this.tickerService.deleteTicker(result).subscribe();
                 }
               }
             });
