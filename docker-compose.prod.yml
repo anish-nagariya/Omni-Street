@@ -33,7 +33,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: gunicorn --timeout 300 --bind 0.0.0.0:5000 app:app
+    command: gunicorn --workers 10 --timeout 300 --bind 0.0.0.0:5000 app:app
     environment:
       MONGODB_HOSTNAME: mongodb
       MONGODB_USERNAME: "apiuser"
@@ -62,7 +62,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     command: celery --app=tasks.celery worker --loglevel=info
-    user: nobody
     environment: 
       FLASK_ENV: production
       MODEL_PATH: "Models/"

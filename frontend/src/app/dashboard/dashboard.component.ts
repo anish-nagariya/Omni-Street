@@ -223,6 +223,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                   !this.tickers.map((t) => t.ticker).includes(result)
                 ) {
                   this.tickerTaskMap.delete(result);
+                  this.startTickerPrediction(result);
                 }
               }
             });
