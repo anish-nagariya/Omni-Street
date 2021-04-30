@@ -50,20 +50,20 @@ if (Test-Path .\omnistreet) {
     pip install waitress
     pip install -r requirements.txt
     Set-Location ..
-    Start-Process cmd -ArgumentList "/k C:\Program Files\Memurai\memurai.exe"
+    Start-Process cmd -ArgumentList "/k 'C:\Program Files\Memurai\memurai.exe'"
     Set-Location backend
-    Start-Process powershell -ArgumentList "server.ps1"
-    Start-Process powershell -ArgumentList "celery.ps1"
+    Start-Process cmd -ArgumentList "/k server.bat"
+    Start-Process cmd -ArgumentList "/k celery.bat"
     Set-Location ..\frontend
-    Start-Process powershell -ArgumentList "web.ps1"
+    Start-Process cmd -ArgumentList "/k web.bat"
 }
 
 Write-Host 'Script Complete'
 # SIG # Begin signature block
 # MIIFdgYJKoZIhvcNAQcCoIIFZzCCBWMCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU40kL2aI2iQz5WGiKce9OtrqH
-# UNigggMOMIIDCjCCAfKgAwIBAgIQegrd3EhqlI9AODQyG4TfiDANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUeQ70SGIHeK9IWo/d6IQRfl50
+# QwigggMOMIIDCjCCAfKgAwIBAgIQegrd3EhqlI9AODQyG4TfiDANBgkqhkiG9w0B
 # AQUFADAdMRswGQYDVQQDDBJMb2NhbCBDb2RlIFNpZ25pbmcwHhcNMjEwNDMwMTE0
 # MzUzWhcNMjIwNDMwMTIwMzUzWjAdMRswGQYDVQQDDBJMb2NhbCBDb2RlIFNpZ25p
 # bmcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDsCBaYejWmce/yypLJ
@@ -83,11 +83,11 @@ Write-Host 'Script Complete'
 # Y2FsIENvZGUgU2lnbmluZwIQegrd3EhqlI9AODQyG4TfiDAJBgUrDgMCGgUAoHgw
 # GAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGC
 # NwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQx
-# FgQUzm9WiiJZ7jrT+7lDYB+2L6utU1cwDQYJKoZIhvcNAQEBBQAEggEA451N477V
-# m19vP6QkjHxsaLoFdQE4qYbBT7BytbOGo0MwjON7qcyc5cA2lBa2dVahWO/vsuaw
-# NuYpuxFgQfDzuX4z0QjXk6m0hXE4PUQUSohIA4f6+Tp/+93BkKSnNXm2aAKV4LFM
-# UOsK7u3DvFBbqncMou/9hpIjiWvhE2v2k26nKVez0PQAxAzGo2CHooBeSRNezAtj
-# jJoPcSGKe1rtMU8blN/tq3lS1/Y/X/ujiw4+4Cy3RYu2DA1GXj6O7sb9p/UF6m6d
-# arLEibWA4e//sVLWaKSkthu5KzliO2K7Xw+FSow5RcemmRZntEcfaoaG+c7XbPcD
-# adn29QA659ET6w==
+# FgQUxmftwi9nvWJ6nvgQtlXS9kYvz3cwDQYJKoZIhvcNAQEBBQAEggEAWNDrafef
+# +vb904v1meTMJa9Iuq7kV+YNxzCCuEJ8a5sZb/VT5uLNToJgGb/kaKc+9AsxKYOy
+# zOz03l5HVINFenneRxvXkcu4WOintnlCeQ+ky6zxYxuvKWO2q+EP0K448LDAV/48
+# 0g0ZLw4pv4QYpngbF8q5igjS9aRjVb9tmpXdhwi9BNyZvkR/wgbApBEbHQeSI5OU
+# KZ120e+b++s41nOoyGaha5mk8LeRUmqJxf8fn8k/wP3qZTbLqY7vQe9pTwabdvNF
+# YZPOwvlAs1RqJxwflAtrdux3cymPRgYHMqRJ6ak/NlV9JF8V2J7uuZAcps+Tu62L
+# mWrEn8OltevxZQ==
 # SIG # End signature block
