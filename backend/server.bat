@@ -1,6 +1,8 @@
 setlocal
 Set MONGODB_HOSTNAME="localhost"
 Set MONGODB_DATABASE="omnidb"
+Set MONGODB_USERNAME=""
+Set MONGODB_PASSWORD=""
 Set FLASK_ENV="development"
 Set JWT_SECRET_KEY="omni-street-jwt-secret-key"
 Set MODEL_PATH="Models/"
@@ -10,5 +12,6 @@ Set CELERY_BROKER_URL="redis://localhost:6379/0"
 Set CELERY_RESULT_BACKEND="redis://localhost:6379/0"
 Set RESET_TOKEN="3030207007026787"
 Set FLASK_DEBUG=1
-waitress-serve --channel-timeout=300 --listen=*:5000 app:app
 endlocal
+
+waitress-serve --channel-timeout=300 --listen=*:5000 app:app
