@@ -27,6 +27,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
+      - ./db:/home/db
       - mongodbdata:/data/db
     networks:
       - backend

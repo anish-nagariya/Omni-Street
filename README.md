@@ -36,26 +36,18 @@ Navigate to <http://localhost/api> to check Angular App
 
 ### Initial Commands to have MongoDB accept the api server
 
-1. First, open the mongodb container in a new interactive shell.
+1. Run the following command once after creating mongo container
 
 ```cmd
-docker exec -it mongo bash
+docker exec -it mongo mongo -u admin -p password /home/db/mongofirst.js
 ```
 
-2. Login to the MongoDB root user account. Enter the admin password when prompted.
+## Command to run powershell script
 
-```cmd
-mongo -u admin -p
-```
+1. Open PowerShell in Adminstrator mode
 
-3. Tell MongoDB which database we want to use.
+2. Run the following replace [Path to ps1 file] to the path of the powershell script
 
-```cmd
-use omnidb
-```
-
-4. Create a non-root user with read & write permissions in the omnidb database.
-
-```cmd
-db.createUser({user: 'apiuser', pwd: 'apipassword', roles: [{role: 'readWrite', db: 'omnidb'}]})
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; [Path to ps1 file]
 ```
