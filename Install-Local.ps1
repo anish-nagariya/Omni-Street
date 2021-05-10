@@ -24,6 +24,10 @@ if (-Not (Test-Path .\omnistreet)) {
     git clone https://sivasunken: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@github.com/anish-nagariya/Omni-Street.git omnistreet 2>&1 | Write-Host
 
     Set-Location omnistreet
+    while ($Null -eq (Get-Process 'com.docker.proxy')) {
+        Start-Process -FilePath "C:\Program Files\Docker\Docker\Docker Desktop.exe" 
+        Start-Sleep -Seconds 30
+    }   
     Start-Process docker-compose -ArgumentList 'up --build -d' -Wait
     $inspect = ""
     do {
