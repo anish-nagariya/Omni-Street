@@ -42,7 +42,7 @@ Navigate to <http://localhost/api> to check Angular App
 docker exec -it mongo mongo -u admin -p password /home/db/mongofirst.js
 ```
 
-## Command to run powershell script
+## Command to run executable file
 
 1. Open PowerShell in Adminstrator mode
 
@@ -51,3 +51,4 @@ docker exec -it mongo mongo -u admin -p password /home/db/mongofirst.js
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; .\Install-local.ps1
 ```
+3. Once docker and git have been installed, rerun the script
