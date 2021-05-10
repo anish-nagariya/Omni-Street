@@ -49,5 +49,5 @@ docker exec -it mongo mongo -u admin -p password /home/db/mongofirst.js
 2. Run the following replace [Path to ps1 file] to the path of the powershell script
 
 ```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; [Path to ps1 file]
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; .\Install-local.ps1
 ```
